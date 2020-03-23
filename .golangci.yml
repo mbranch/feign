@@ -1,0 +1,20 @@
+linters:
+  enable:
+    - deadcode
+    - errcheck
+    - goimports
+    - golint
+    - govet
+    - unconvert
+    - varcheck
+    - staticcheck
+
+linters-settings:
+  govet:
+    check-shadowing: true
+
+issues:
+  exclude-rules:
+    - text: "should not use dot imports"
+      linters:
+        - golint
