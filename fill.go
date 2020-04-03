@@ -13,7 +13,7 @@ import (
 var typeTime = reflect.TypeOf((*time.Time)(nil)).Elem()
 
 // Filler is a func used to provide the value used to fill a struct field.
-type Filler func(path string) (ok bool, val interface{})
+type Filler func(path string) (val interface{}, ok bool)
 
 // Fill fills a type with random data.
 func Fill(val interface{}, fillers ...Filler) error {
@@ -45,7 +45,7 @@ func getValue(path string, a interface{}, fillers ...Filler) (reflect.Value, err
 	}
 	if path != "" {
 		for _, fn := range fillers {
-			if ok, v := fn(path); ok {
+			if v, ok := fn(path); ok {
 				return reflect.ValueOf(v), nil
 			}
 		}

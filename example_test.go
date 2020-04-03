@@ -41,12 +41,12 @@ func Example_fillers() {
 	var c customer
 	fake.Seed(0)
 	feign.Seed(0)
-	feign.MustFill(&c, func(path string) (bool, interface{}) {
+	feign.MustFill(&c, func(path string) (interface{}, bool) {
 		switch path {
 		case ".Email":
-			return true, fake.EmailAddress()
+			return fake.EmailAddress(), true
 		default:
-			return false, nil
+			return nil, false
 		}
 	})
 	out(c)
@@ -91,12 +91,12 @@ func Example_nested() {
 
 	var o Order
 	feign.Seed(1)
-	feign.MustFill(&o, func(path string) (bool, interface{}) {
+	feign.MustFill(&o, func(path string) (interface{}, bool) {
 		switch path {
 		case ".Items.PriceCents":
-			return true, 100 + ((feign.Rand().Int63() % 400) * 25)
+			return 100 + ((feign.Rand().Int63() % 400) * 25), true
 		default:
-			return false, nil
+			return nil, false
 		}
 	})
 	out(o)

@@ -54,16 +54,16 @@ func TestFillers(t *testing.T) {
 		}
 	}
 	now := time.Now()
-	assert.Must(t, Fill(&p, func(path string) (bool, interface{}) {
+	assert.Must(t, Fill(&p, func(path string) (interface{}, bool) {
 		switch path {
 		case ".ID":
-			return true, "id"
+			return "id", true
 		case
 			".Timestamps.Created",
 			".Timestamps.Updated":
-			return true, now
+			return now, true
 		default:
-			return false, nil
+			return nil, false
 		}
 	}))
 	assert.Equal(t, p.ID, "id")
