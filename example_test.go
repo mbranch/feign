@@ -22,12 +22,14 @@ func Example_struct() {
 	out(p)
 	// Output:
 	// {
-	//   "Name": "sVedgmJqWUdRjXZQpSbJeosBNHIgFoyZenboACWMGHbMLpzQAnthAGo",
-	//   "Age": 1689,
+	//   "Name": "sVedgmJqWUdRj",
+	//   "Age": 22264,
 	//   "Skills": {
-	//     "MYkESUcXArFAGg osYWgjSrQYOqTVzK MrHZpXOdzxVHmRMcohl": false,
-	//     "hlFqUvrJQ": false,
-	//     "lqRffoWblyuKDyZDTkxgDZincDwMDpVLNLkWOo": true
+	//     " DMYkESUcXArFAGg": true,
+	//     "HbMLpzQAnthAG": false,
+	//     "IgFoyZenboACW": true,
+	//     "osB": false,
+	//     "pSb": true
 	//   }
 	// }
 }
@@ -73,7 +75,7 @@ func Example_string() {
 	feign.MustFill(&s)
 	out(s)
 	// Output:
-	// "sVedgmJqWUdRjXZQpSbJeosBNHIgFoyZenboACWMGHbMLpzQAnthAGo"
+	// "sVedgmJqWUdRj"
 }
 
 func Example_nested() {
@@ -106,11 +108,11 @@ func Example_nested() {
 	//   "Items": [
 	//     {
 	//       "ID": "9525e20f-da68-927f-2b2f-f836f73578db",
-	//       "Name": "ysAGsItGVGGRRDeTRPTNinYcyJwhrzeTW",
-	//       "PriceCents": 7075
+	//       "Name": "ysAGsItGVGGRRDeTRPTNinYcyJwhrze",
+	//       "PriceCents": 8025
 	//     }
 	//   ],
-	//   "Created": "0287-02-13T15:47:24.282286269Z"
+	//   "Created": "0263-03-04T16:15:38.659802269Z"
 	// }
 }
 
