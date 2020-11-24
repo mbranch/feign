@@ -48,14 +48,14 @@ const (
 
 var (
 	// stringBoundary is the possible lengths of randomly generated strings.
-	stringBoundary = boundary{start: 1, end: 64}
+	stringBoundary = boundary{start: 1, end: 32}
 
 	// intBoundary is the possible range of randomly generated integers.
 	intBoundary = boundary{start: 0, end: 65536}
 
 	// sliceAndMapBoundary is the possible lengths of randomly generated slices
 	// and maps.
-	sliceAndMapBoundary = boundary{start: 1, end: 64}
+	sliceAndMapBoundary = boundary{start: 1, end: 8}
 )
 
 // safeSource holds a thread-safe implementation of rand.Source64.
