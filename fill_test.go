@@ -24,9 +24,21 @@ func TestFill(t *testing.T) {
 				Mike   map[string][]int
 			}
 		}
+		November interface{}
+		Oscar    interface{}
+		Papa     interface{}
 	}
 	assert.ErrorContains(t, Fill(p), "not a pointer value")
-	assert.Must(t, Fill(&p))
+	assert.Must(t, Fill(&p, func(path string) (interface{}, bool) {
+		switch path {
+		case ".Oscar":
+			return nil, true
+		case ".Papa":
+			return 1, true
+		default:
+			return nil, false
+		}
+	}))
 	assert.True(t, p.Alpha != 0)
 	assert.True(t, p.Beta != "")
 	assert.NotNil(t, p.Charlie)
@@ -39,6 +51,7 @@ func TestFill(t *testing.T) {
 	assert.False(t, p.Echo.Indigo.Kilo.IsZero())
 	assert.True(t, len(p.Echo.Indigo.Lima) > 0)
 	assert.True(t, len(p.Echo.Indigo.Mike) > 0)
+	assert.Nil(t, p.November)
 	for k := range p.Echo.Indigo.Mike {
 		assert.True(t, len(p.Echo.Indigo.Mike[k]) > 0)
 	}

@@ -39,16 +39,19 @@ func MustFill(val interface{}, fillers ...Filler) {
 }
 
 func getValue(path string, a interface{}, fillers ...Filler) (reflect.Value, error) {
-	t := reflect.TypeOf(a)
-	if t == nil {
-		return reflect.Value{}, errors.New("interface{} not allowed")
-	}
 	if path != "" {
 		for _, fn := range fillers {
 			if v, ok := fn(path); ok {
+				if v == nil {
+					return reflect.ValueOf(&v).Elem(), nil
+				}
 				return reflect.ValueOf(v), nil
 			}
 		}
+	}
+	t := reflect.TypeOf(a)
+	if t == nil {
+		return reflect.ValueOf(&a).Elem(), nil
 	}
 	switch t.Kind() {
 	case reflect.Ptr:
