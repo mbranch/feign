@@ -7,6 +7,11 @@ import (
 	"github.com/deliveroo/assert-go"
 )
 
+type Romeo interface {
+	Sierra() string
+	Tango() int
+}
+
 func TestFill(t *testing.T) {
 	var p struct {
 		Alpha   int
@@ -27,21 +32,34 @@ func TestFill(t *testing.T) {
 		November interface{}
 		Oscar    interface{}
 		Papa     interface{}
+		Quebec   Romeo
+		Uniform  map[interface{}]int
+		Victor   []interface{}
+		Whiskey  map[string]interface{}
+		Yankee   chan int
+		Zulu     func(string) bool
 	}
 	assert.ErrorContains(t, Fill(p), "not a pointer value")
 	assert.Must(t, Fill(&p, func(path string) (interface{}, bool) {
 		switch path {
-		case ".Oscar":
+		case ".Charlie":
 			return nil, true
+		case ".Oscar":
+			return nil, false
 		case ".Papa":
 			return 1, true
+		case ".Zulu":
+			return func(s string) bool {
+				return s == ""
+			}, true
 		default:
 			return nil, false
 		}
 	}))
+	assert.True(t, p.Zulu(""))
 	assert.True(t, p.Alpha != 0)
 	assert.True(t, p.Beta != "")
-	assert.NotNil(t, p.Charlie)
+	assert.Nil(t, p.Charlie)
 	assert.NotNil(t, *p.Delta)
 	assert.NotNil(t, p.Echo.Foxtrot)
 	assert.NotNil(t, p.Echo.Golf != 0)
@@ -55,6 +73,17 @@ func TestFill(t *testing.T) {
 	for k := range p.Echo.Indigo.Mike {
 		assert.True(t, len(p.Echo.Indigo.Mike[k]) > 0)
 	}
+}
+
+func TestUnhandledTypes(t *testing.T) {
+	var p interface{}
+	assert.NotNil(t, Fill(&p))
+
+	var q chan error
+	assert.NotNil(t, Fill(&q))
+
+	var r func(bool) int32
+	assert.NotNil(t, Fill(&r))
 }
 
 func TestFillers(t *testing.T) {

@@ -5,12 +5,16 @@ package feign
 
 import (
 	"errors"
-	"fmt"
 	"reflect"
 	"time"
 )
 
 var typeTime = reflect.TypeOf((*time.Time)(nil)).Elem()
+
+// ErrUnhandledType is an error returned when the type is not fillable.
+// Unfillable types include funcs, chans, and interfaces. When filling structs,
+// maps, or slices, these types will be ignored.
+var ErrUnhandledType = errors.New("unhandled type")
 
 // Filler is a func used to provide the value used to fill a struct field.
 type Filler func(path string) (val interface{}, ok bool)
@@ -43,7 +47,7 @@ func getValue(path string, a interface{}, fillers ...Filler) (reflect.Value, err
 		for _, fn := range fillers {
 			if v, ok := fn(path); ok {
 				if v == nil {
-					return reflect.ValueOf(&v).Elem(), nil
+					return reflect.Zero(reflect.TypeOf(a)), nil
 				}
 				return reflect.ValueOf(v), nil
 			}
@@ -51,7 +55,7 @@ func getValue(path string, a interface{}, fillers ...Filler) (reflect.Value, err
 	}
 	t := reflect.TypeOf(a)
 	if t == nil {
-		return reflect.ValueOf(&a).Elem(), nil
+		return reflect.Value{}, ErrUnhandledType
 	}
 	switch t.Kind() {
 	case reflect.Ptr:
@@ -85,6 +89,9 @@ func getValue(path string, a interface{}, fillers ...Filler) (reflect.Value, err
 					continue // avoid panic to set on unexported field in struct
 				}
 				val, err := getValue(path+"."+t.Field(i).Name, field.Interface(), fillers...)
+				if err == ErrUnhandledType {
+					continue
+				}
 				if err != nil {
 					return reflect.Value{}, err
 				}
@@ -101,6 +108,9 @@ func getValue(path string, a interface{}, fillers ...Filler) (reflect.Value, err
 		v := reflect.New(t).Elem()
 		for i := 0; i < t.Len(); i++ {
 			val, err := getValue(path, v.Index(i).Interface(), fillers...)
+			if err == ErrUnhandledType {
+				continue
+			}
 			if err != nil {
 				return reflect.Value{}, err
 			}
@@ -116,6 +126,9 @@ func getValue(path string, a interface{}, fillers ...Filler) (reflect.Value, err
 		v := reflect.MakeSlice(t, len, len)
 		for i := 0; i < v.Len(); i++ {
 			val, err := getValue(path, v.Index(i).Interface(), fillers...)
+			if err == ErrUnhandledType {
+				continue
+			}
 			if err != nil {
 				return reflect.Value{}, err
 			}
@@ -132,12 +145,18 @@ func getValue(path string, a interface{}, fillers ...Filler) (reflect.Value, err
 		for i := 0; i < len; i++ {
 			keyInstance := reflect.New(t.Key()).Elem().Interface()
 			key, err := getValue(path, keyInstance, fillers...)
+			if err == ErrUnhandledType {
+				continue
+			}
 			if err != nil {
 				return reflect.Value{}, err
 			}
 
 			valueInstance := reflect.New(t.Elem()).Elem().Interface()
 			val, err := getValue(path, valueInstance, fillers...)
+			if err == ErrUnhandledType {
+				continue
+			}
 			if err != nil {
 				return reflect.Value{}, err
 			}
@@ -176,6 +195,6 @@ func getValue(path string, a interface{}, fillers ...Filler) (reflect.Value, err
 		return reflect.ValueOf(uint64(randomInteger())), nil
 
 	default:
-		return reflect.Value{}, fmt.Errorf("unsupported for type %+v", t)
+		return reflect.Value{}, ErrUnhandledType
 	}
 }
