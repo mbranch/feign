@@ -19,7 +19,8 @@ func Example_struct() {
 	var p person
 	feign.Seed(0)
 	feign.MustFill(&p)
-	out(p)
+
+	output(p)
 	// Output:
 	// {
 	//   "Name": "sVedgmJqWUdRj",
@@ -51,7 +52,8 @@ func Example_fillers() {
 			return nil, false
 		}
 	})
-	out(c)
+
+	output(c)
 	// Output:
 	// {
 	//   "ID": "fa12f92a-fbe0-0f85-08d0-e83bab9cf8ce",
@@ -64,7 +66,8 @@ func Example_int() {
 	var i int
 	feign.Seed(0)
 	feign.MustFill(&i)
-	out(i)
+
+	output(i)
 	// Output:
 	// 12282
 }
@@ -73,16 +76,18 @@ func Example_string() {
 	var s string
 	feign.Seed(0)
 	feign.MustFill(&s)
-	out(s)
+
+	output(s)
 	// Output:
 	// "sVedgmJqWUdRj"
 }
 
 func Example_nested() {
 	type OrderItem struct {
-		ID         uuid.UUID
-		Name       string
-		PriceCents int
+		ProductID       int
+		Name            string
+		PriceFractional int
+		Attributes      map[string]string
 	}
 
 	type Order struct {
@@ -95,31 +100,40 @@ func Example_nested() {
 	feign.Seed(1)
 	feign.MustFill(&o, func(path string) (interface{}, bool) {
 		switch path {
-		case ".Items.PriceCents":
+		case ".Items.PriceFractional":
 			return 100 + ((feign.Rand().Int63() % 400) * 25), true
 		default:
 			return nil, false
 		}
 	})
-	out(o)
+
+	output(o)
 	// Output:
 	// {
 	//   "ID": "210fc7bb-8186-39ac-48a4-c6afa2f1581a",
 	//   "Items": [
 	//     {
-	//       "ID": "9525e20f-da68-927f-2b2f-f836f73578db",
-	//       "Name": "ysAGsItGVGGRRDeTRPTNinYcyJwhrze",
-	//       "PriceCents": 8025
+	//       "ProductID": 23701,
+	//       "Name": "SCX",
+	//       "PriceFractional": 2875,
+	//       "Attributes": {
+	//         "AmTgVjiMDy": "AGsItGVGGRRDeTRPTNinYcyJ",
+	//         "EYAua wti": "NPFhIvN",
+	//         "IN NY": "XAnZHdKrMfWYLFocFYszCG eZj",
+	//         "TKvBqWJBscgSE": "IsJqDvttR",
+	//         "gTivDxUcOYVZwJCZbf": "PHPGGhoQQQoCFcgJCLF",
+	//         "hrzeTWVmkCrTDsmwcpWKwcxnzDyOyqx": "e",
+	//         "kdflCVbJoFXdsTMGBEdXryjTFQrd": "QW"
+	//       }
 	//     }
 	//   ],
-	//   "Created": "0263-03-04T16:15:38.659802269Z"
+	//   "Created": "0073-06-09T21:30:44.650537874Z"
 	// }
 }
 
-func out(v interface{}) {
+// output prints the json value to stdout.
+func output(v interface{}) {
 	e := json.NewEncoder(os.Stdout)
 	e.SetIndent("", "  ")
-	if err := e.Encode(v); err != nil {
-		panic(err)
-	}
+	_ = e.Encode(v)
 }
