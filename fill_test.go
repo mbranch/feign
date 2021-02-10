@@ -12,6 +12,12 @@ type Romeo interface {
 	Tango() int
 }
 
+type (
+	Baker   map[int]map[Fisher][]Canteen
+	Canteen int
+	Fisher  uint
+)
+
 func TestFill(t *testing.T) {
 	var p struct {
 		Alpha   int
@@ -38,6 +44,10 @@ func TestFill(t *testing.T) {
 		Whiskey  map[string]interface{}
 		Yankee   chan int
 		Zulu     func(string) bool
+
+		Actor Baker
+		Diver map[string]Canteen
+		Eagle map[Canteen]float64
 	}
 	assert.ErrorContains(t, Fill(p), "not a pointer value")
 	assert.Must(t, Fill(&p, func(path string) (interface{}, bool) {

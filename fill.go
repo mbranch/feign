@@ -114,7 +114,7 @@ func getValue(path string, a interface{}, fillers ...Filler) (reflect.Value, err
 			if err != nil {
 				return reflect.Value{}, err
 			}
-			v.Index(i).Set(val)
+			v.Index(i).Set(val.Convert(t.Elem()))
 		}
 		return v, nil
 
@@ -132,7 +132,7 @@ func getValue(path string, a interface{}, fillers ...Filler) (reflect.Value, err
 			if err != nil {
 				return reflect.Value{}, err
 			}
-			v.Index(i).Set(val)
+			v.Index(i).Set(val.Convert(t.Elem()))
 		}
 		return v, nil
 
@@ -160,7 +160,7 @@ func getValue(path string, a interface{}, fillers ...Filler) (reflect.Value, err
 			if err != nil {
 				return reflect.Value{}, err
 			}
-			v.SetMapIndex(key, val)
+			v.SetMapIndex(key.Convert(t.Key()), val.Convert(t.Elem()))
 		}
 		return v, nil
 
