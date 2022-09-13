@@ -79,7 +79,7 @@ func getValue(path string, a interface{}, fillers ...Filler) (reflect.Value, err
 	case reflect.Struct:
 		switch t {
 		case typeTime:
-			ft := time.Time{}.Add(time.Duration(random.Int63()))
+			ft := time.Time{}.Add(time.Duration(random.Int63())).UTC()
 			return reflect.ValueOf(ft), nil
 		default:
 			v := reflect.New(t).Elem()
