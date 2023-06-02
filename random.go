@@ -37,6 +37,24 @@ func init() {
 	})
 }
 
+var defaultTimeFn = func() time.Time {
+	return time.Time{}.Add(time.Duration(random.Int63())).UTC()
+}
+
+var timeFn = defaultTimeFn
+
+// TimeFn uses the provided function to generate random time values globally.
+// This is often relevant when interacting with databases, which may store lower
+// resolution timestamps than possible with time.Time, or when time values need
+// to be within a certain date range.
+func TimeFn(fn func() time.Time) {
+	if fn == nil {
+		timeFn = defaultTimeFn
+	} else {
+		timeFn = fn
+	}
+}
+
 type boundary struct {
 	start int
 	end   int
